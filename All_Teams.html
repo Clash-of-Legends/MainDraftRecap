@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <title>Přehled týmů po draftu</title>
+  <style>
+    body {
+      background-color: black;
+      color: white;
+      font-family: sans-serif;
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+    }
+
+    .teams-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 30px;
+      padding: 50px;
+    }
+
+    .team-box {
+      width: 220px;
+     
+      border: 2px solid #ff6600;
+      border-radius: 8px;
+      text-align: center;
+      padding: 10px;
+    }
+
+    .team-name {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 10px;
+      color: #ff6600;
+    }
+
+    .player-panel {
+      border: 2px solid #ff6600;
+      margin: 6px 0;
+      background-color: #000;
+    }
+
+    .top {
+      background-color: #ff6600;
+      font-weight: bold;
+      padding: 4px;
+    }
+
+    .img-box {
+      background-color: #222;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .img-box img {
+      max-height: 50px;
+      max-width: 90%;
+    }
+
+    .price {
+      font-size: 16px;
+      font-weight: bold;
+      padding: 6px;
+    }
+
+    #nav-btn {
+    display: block;
+    margin: 80px auto;
+    font-size: 12px;
+    padding: 10px 30px;
+    background-color: #ff6600;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    }
+
+
+    #fileInput {
+      display: block;
+      margin: 20px auto;
+      font-size: 16px;
+    }
+	#bg-video {
+	  position: fixed;
+	  top: 0;
+	  left: 0;
+	  min-width: 100%;
+	  min-height: 100%;
+	  object-fit: cover;
+	  z-index: -1;
+	  opacity: 0.5; /* průhlednost videa, lze upravit */
+	  pointer-events: none; /* aby na něj nešlo kliknout */
+	}
+
+  </style>
+</head>
+<body>
+  <input type="file" id="fileInput" accept="application/json">
+  <div class="teams-container" id="teams"></div>
+  <button id="nav-btn" onclick="showNextGroup()" style="display:none;">Další týmy</button>
+
+
+ <video id="bg-video" autoplay muted loop playsinline>
+  <source src="turbo_bg.mp4" type="video/mp4">
+  Váš prohlížeč nepodporuje video tag.
+</video>
+  <script>
+    let teams = [];
+    let currentIndex = 0;
+    const teamsPerPage = 5;
+
+    const roleImages = {
+      top: 'POSITION/top.png',
+      jg: 'POSITION/JG.png',
+      mid: 'POSITION/mid.png',
+      adc: 'POSITION/ADC.png',
+      sup: 'POSITION/sup.png'
+    };
+
+document.getElementById('fileInput').addEventListener('change', function(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const data = JSON.parse(e.target.result);
+      const grouped = {};
+
+      data.forEach(p => {
+        if (!grouped[p.team]) grouped[p.team] = {};
+        grouped[p.team][p.role] = { name: p.name, price: p.price };
+      });
+
+      teams = Object.entries(grouped).map(([teamName, players]) => ({
+        name: teamName,
+        players
+      }));
+
+      document.getElementById('fileInput').style.display = 'none';
+      document.getElementById('nav-btn').style.display = 'block';
+      currentIndex = 0;
+      showNextGroup();
+    } catch (err) {
+      alert('Chybný formát JSONu');
+    }
+  };
+  reader.readAsText(file); // <- důležité, aby se vůbec spustilo načítání
+}); // ← TADY BYLO TO CHYBĚJÍCÍ
+
+
+function showNextGroup() {
+  const container = document.getElementById('teams');
+  container.innerHTML = '';
+
+  const roles = ['top', 'jg', 'mid', 'adc', 'sup'];
+
+  for (let i = 0; i < teamsPerPage; i++) {
+    const teamIndex = currentIndex + i;
+    if (teamIndex >= teams.length) break;
+
+    const team = teams[teamIndex];
+    const div = document.createElement('div');
+    div.className = 'team-box';
+
+	let html = `
+	
+	  <img src="TEAM_LOGOS/${team.name || 'default'}.png" alt="${team.name} logo" style="width: 100%; max-height: 100px; object-fit: contain; margin-bottom: 10px;">`;
+
+
+    for (let role of roles) {
+      const player = team.players[role] || { name: '---', price: '---' };
+      const imgSrc = roleImages[role] || '';
+      html += `
+        <div class="player-panel">
+          <div class="top">${player.name}</div>
+          <div class="img-box"><img src="${imgSrc}" alt="${role}"></div>
+          <div class="price">${player.price} <img src="icons/be.webp" alt="BE" style="height: 18px; vertical-align: middle;"> </div>
+        </div>`;
+    }
+
+    div.innerHTML = html;
+    container.appendChild(div);
+  }
+
+  currentIndex += teamsPerPage;
+  if (currentIndex >= teams.length) {
+    currentIndex = 0;
+  }
+}
+
+
+  </script>
+</body>
+</html>
