@@ -168,12 +168,11 @@ function showNextGroup() {
     const div = document.createElement('div');
     div.className = 'team-box';
 
-	let html = `
-	
-	  <img src="TEAM_LOGOS/${(team.name ? team.name.charAt(0).toUpperCase() + team.name.slice(1).toLowerCase() : 'default')}.png" alt="${(team.name ? team.name.charAt(0).toUpperCase() + team.name.slice(1).toLowerCase() : 'default')} logo" style="width: 100%; max-height: 100px; object-fit: contain; margin-bottom: 10px;">
-
-	  
-
+    const logoName = team.name?.trim() || 'default';
+    let html = `
+      <img src="TEAM_LOGOS/${logoName}.png" alt="${logoName} logo" style="width: 100%; max-height: 100px; object-fit: contain; margin-bottom: 10px;">
+      <div class="team-name">${logoName}</div>
+    `;
 
     for (let role of roles) {
       const player = team.players[role] || { name: '---', price: '---' };
@@ -182,7 +181,7 @@ function showNextGroup() {
         <div class="player-panel">
           <div class="top">${player.name}</div>
           <div class="img-box"><img src="${imgSrc}" alt="${role}"></div>
-          <div class="price">${player.price} <img src="icons/be.webp" alt="BE" style="height: 18px; vertical-align: middle;"> </div>
+          <div class="price">${player.price} <img src="icons/be.webp" alt="BE" style="height: 18px; vertical-align: middle;"></div>
         </div>`;
     }
 
@@ -197,7 +196,9 @@ function showNextGroup() {
 }
 
 
+
   </script>
 </body>
 </html>
+
 
