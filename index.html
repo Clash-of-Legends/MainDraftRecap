@@ -170,7 +170,9 @@ function showNextGroup() {
 
 	let html = `
 	
-	  <img src="TEAM_LOGOS/${team.name || 'default'}.png" alt="${team.name} logo" style="width: 100%; max-height: 100px; object-fit: contain; margin-bottom: 10px;">`;
+	  <img src="TEAM_LOGOS/${(team.name ? team.name.charAt(0).toUpperCase() + team.name.slice(1).toLowerCase() : 'default')}.png" alt="${(team.name ? team.name.charAt(0).toUpperCase() + team.name.slice(1).toLowerCase() : 'default')} logo" style="width: 100%; max-height: 100px; object-fit: contain; margin-bottom: 10px;">
+
+	  
 
 
     for (let role of roles) {
@@ -198,3 +200,4 @@ function showNextGroup() {
   </script>
 </body>
 </html>
+
