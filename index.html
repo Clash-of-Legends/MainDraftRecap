@@ -168,7 +168,8 @@ function showNextGroup() {
     const div = document.createElement('div');
     div.className = 'team-box';
 
-    const logoName = team.name?.trim() || 'default';
+    const logoName = capitalizeFirstOnly(team.name?.trim() || 'default');
+
     let html = `
       <img src="TEAM_LOGOS/${logoName}.png" alt="${logoName} logo" style="width: 100%; max-height: 100px; object-fit: contain; margin-bottom: 10px;">
       <div class="team-name">${logoName}</div>
@@ -194,11 +195,13 @@ function showNextGroup() {
     currentIndex = 0;
   }
 }
+function capitalizeFirstOnly(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+}
 
 
 
   </script>
 </body>
 </html>
-
 
